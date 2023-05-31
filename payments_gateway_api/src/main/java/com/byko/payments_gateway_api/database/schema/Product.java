@@ -32,6 +32,4 @@ public class Product {
 
     @Nullable
     private String stripePriceId;
-    @Nullable
-    private String paypalReferenceId;
 }

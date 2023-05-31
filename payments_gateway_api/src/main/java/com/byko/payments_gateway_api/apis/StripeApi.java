@@ -103,7 +103,7 @@ public class StripeApi implements PaymentImpl {
 
         /* save invoice to base */
         Invoice invoice = new Invoice();
-        invoice.setPaymentMethod(PaymentMethod.Stripe);
+        invoice.setPaymentMethod(PaymentMethod.Stripe.toString());
         invoice.setPaymentId(response.getBody().getId());
         invoice.setProduct(product);
         invoice.setTransactionId(transactionId);
@@ -115,7 +115,7 @@ public class StripeApi implements PaymentImpl {
 
     /* https://stripe.com/docs/api/checkout/sessions/retrieve */
     @Override
-    public String isPaymentPaid(String transactionId) {
+    public boolean isPaymentPaid(String transactionId) {
         Invoice invoice = invoiceService.getByTransactionId(transactionId);
 
         HttpHeaders headers = new HttpHeaders();
@@ -133,9 +133,9 @@ public class StripeApi implements PaymentImpl {
         if(response.getBody().getPayment_status().equals("paid")){
             invoice.setPaid(true);
             invoiceService.save(invoice);
+            return true;
         }
-
-        return response.getBody().toString();
+        return false;
     }
 
     private String parsePriceToRequest(float price){

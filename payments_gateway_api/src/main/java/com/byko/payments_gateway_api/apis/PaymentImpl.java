@@ -6,5 +6,5 @@ import org.springframework.http.HttpEntity;
 public interface PaymentImpl {
     HttpEntity<?> getRequestBody(Object body);
     String createPayment(Product product);
-    String isPaymentPaid(String transactionId);
+    boolean isPaymentPaid(String transactionId);
 }

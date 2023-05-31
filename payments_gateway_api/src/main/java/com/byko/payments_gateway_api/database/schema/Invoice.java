@@ -26,7 +26,7 @@ public class Invoice {
     @JoinColumn
     private Product product;
 
-    private PaymentMethod paymentMethod;
+    private String paymentMethod;
 
     private String paymentId;
 
