@@ -25,7 +25,7 @@ public class PayPalApi implements PaymentImpl{
     @Value("${paypal.client.secret}")
     private String clientSecret;
 
-    @Value("${application.url}")
+    @Value("${frontend.url}")
     private String APPLICATION_URL;
 
     /* sandbox paypal url -> only for testing purpose */

@@ -1,5 +1,5 @@
 import logo from './logo.svg';
-import './App.css';
+import './assets/main.scss';
 
 function App() {
   return (
@@ -17,6 +17,8 @@ function App() {
         >
           Learn React
         </a>
+        <span className="flex w-3 h-3 bg-red-500 rounded-full"></span>
+
       </header>
     </div>
   );
