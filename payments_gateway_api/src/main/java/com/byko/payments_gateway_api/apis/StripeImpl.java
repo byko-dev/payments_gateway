@@ -24,7 +24,7 @@ public class StripeApi implements PaymentImpl {
     @Value("${stripe.secret.key}")
     private String secretKey;
 
-    @Value("${application.url}")
+    @Value("${frontend.url}")
     private String APPLICATION_URL;
 
     private RestTemplate restTemplate;
@@ -64,7 +64,7 @@ public class StripeApi implements PaymentImpl {
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
 
         requestBody.add("unit_amount", parsePriceToRequest(product.getPrice()));
-        requestBody.add("currency", "usd");
+        requestBody.add("currency", "eur");
         requestBody.add("product", product.getStripeId());
 
         ResponseEntity<PriceResponse> response =
@@ -79,7 +79,7 @@ public class StripeApi implements PaymentImpl {
 
     /* https://stripe.com/docs/api/payment_links/payment_links/create?lang=curl */
     @Override
-    public String createPayment(Product product) {
+    public String createPayment(Product product, String cryptocurrency) {
         if(product.getStripePriceId() == null){
             product = setProductIdRequest(product);
             product = setPriceToProductRequest(product);
