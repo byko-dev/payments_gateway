@@ -6,20 +6,18 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
 @Validated
+@CrossOrigin(origins = "*") /* all origins are allowed, only developed purpose */
 public class ProductController {
 
     private ProductService productService;
 
     @PostMapping("/product")
-    public ResponseEntity<?> create(@Valid @RequestBody ProductModel productModel){
+    public ResponseEntity<?> create(@RequestBody @Valid ProductModel productModel){
         return ResponseEntity.ok(productService.create(productModel));
     }
 

@@ -16,4 +16,14 @@ public class ProductModel {
 
     @DecimalMin(value = "2", message="price must be equals or higher then 2.00")
     private float price;
+
+    @NotEmpty
+    @NotNull
+    @NotBlank
+    private String brand;
+
+    @NotEmpty
+    @NotNull
+    @NotBlank
+    private String category;
 }

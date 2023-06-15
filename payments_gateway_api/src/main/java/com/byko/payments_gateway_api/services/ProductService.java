@@ -19,6 +19,8 @@ public class ProductService {
         Product product = new Product();
         product.setName(productModel.getName());
         product.setPrice(productModel.getPrice());
+        product.setBrand(productModel.getBrand());
+        product.setCategory(productModel.getCategory());
 
         return productRepository.save(product);
     }
