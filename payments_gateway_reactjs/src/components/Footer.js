@@ -1,6 +1,4 @@
-
 const Footer = () => {
-
     return(
         <footer
             className="bg-white rounded-lg shadow sm:flex sm:items-center sm:justify-between p-4 sm:p-6 xl:p-8">
@@ -24,7 +22,7 @@ const Footer = () => {
                     Like us on Facebook
                     <div className="tooltip-arrow" data-popper-arrow></div>
                 </div>
-                <a href="#" data-tooltip-target="tooltip-twitter"
+                <a href="https://twitter.com/bykodev" target="_blank" data-tooltip-target="tooltip-twitter"
                    className="inline-flex justify-center p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100">
                     <svg aria-hidden="true" className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"
                          aria-hidden="true">
@@ -38,7 +36,7 @@ const Footer = () => {
                     Follow us on Twitter
                     <div className="tooltip-arrow" data-popper-arrow></div>
                 </div>
-                <a href="#" data-tooltip-target="tooltip-github"
+                <a href="https://github.com/byko-dev" target="_blank" data-tooltip-target="tooltip-github"
                    className="inline-flex justify-center p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100">
                     <svg aria-hidden="true" className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"
                          aria-hidden="true">

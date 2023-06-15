@@ -3,6 +3,8 @@ import {useSelector} from "react-redux";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import * as api from "../api";
+import {LoadingSpinner} from "../elements/LoadingSpinner";
+
 const Payment = () => {
 
     const navigate = useNavigate();
@@ -19,34 +21,40 @@ const Payment = () => {
     }, [])
 
     const createPayment = () => {
+        console.log(email, cryptocurrency);
         if(!fetch){
-            setFetch(true)
             if(paymentMethod === "paypal" || paymentMethod === "stripe"){
+                setFetch(true)
                 api.createPayment(paymentMethod, product.id)
                     .then((response) => {
                         window.location.replace(response.url)
                         setFetch(false)
                     }).catch(() => setFetch(false))
             }else if(paymentMethod === "crypto"){
-
+                setFetch(true)
+                api.createCryptoPayment(email, product.id, cryptocurrency)
+                    .then((response) => {
+                        window.location.replace(response.url)
+                        setFetch(false)
+                    }).catch(() => setFetch(false))
             }
         }
     }
 
     return(
-        <div className="bg-gray-50 h-full" style={{textAlign: "center", display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center"}}>
+        <div className="bg-gray-50 h-full payment_container" >
 
             <h2 className="text-4xl font-extrabold dark:text-white">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">Payments tool </span> for companies</h2>
             <p className="mb-10 mt-3 text-lg font-normal lg:text-xl sm:px-16 xl:px-48"> Choose payment method and buy right now! </p>
 
-            <div className="payment_container">
+            <div className="payment_section">
 
-                <div style={{display: "flex", justifyContent: "center", gap: "10px", width: "300px", flexDirection: "column" }}>
+                <div className="payment_method_box">
 
                     <p className="text-lg font-normal lg:text-xl "> Choose delivery method! </p>
                     <div className="flex items-center pl-4 mb-5 border border-gray-200 rounded dark:border-gray-700">
-                        <input checked id="bordered-radio-4" type="radio" name="bordered-radio1"
+                        <input defaultChecked id="bordered-radio-4" type="radio" name="bordered-radio1"
                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
                         <label htmlFor="bordered-radio-4"
                                className="w-full py-4 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Online - immediate delivery</label>
@@ -74,9 +82,9 @@ const Payment = () => {
 
                     {paymentMethod === "crypto" ? <div>
                         <label htmlFor="small" className="text-left mt-3 block mb-2 text-sm font-medium text-gray-900 dark:text-white">Choose cryptocurrency to pay!</label>
-                        <select id="small"
+                        <select id="small" value={cryptocurrency} onChange={e => setCryptocurrency(e.target.value)}
                                 className="block w-full p-2 mb-3 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <option selected>Choose a cryptocurrency</option>
+                            <option>Choose a cryptocurrency</option>
                             <option value="ETH">Ethereum</option>
                             <option value="BTC">Bitcoin</option>
                             <option value="USDT">Tether</option>
@@ -85,8 +93,7 @@ const Payment = () => {
                         </select>
 
                         <label htmlFor="input-group-1"
-                               className="text-left block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your
-                            Email</label>
+                               className="text-left block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your Email</label>
                         <div className="relative mb-6">
                             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                 <svg aria-hidden="true" className="w-5 h-5 text-gray-500 dark:text-gray-400"
@@ -96,17 +103,12 @@ const Payment = () => {
                                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
                                 </svg>
                             </div>
-                            <input type="text" id="input-group-1"
+                            <input type="text" id="input-group-1" value={email} onChange={e => setEmail(e.target.value)}
                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                    placeholder="name@gmail.com" />
                         </div>
-
-
                     </div>: ""}
-
-
                 </div>
-
 
                 <div
                     className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
@@ -148,7 +150,7 @@ const Payment = () => {
                         </div>
                         <div className="flex items-center justify-between">
                             <span className="text-3xl font-bold text-gray-900 dark:text-white">${product.price}</span>
-                            <a onClick={() => createPayment()} className="cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Pay now!</a>
+                            <a onClick={() => createPayment()} className="cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{fetch ? <LoadingSpinner /> :"Pay now!"}</a>
                         </div>
                     </div>
                 </div>

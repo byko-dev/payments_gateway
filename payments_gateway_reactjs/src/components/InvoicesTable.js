@@ -1,5 +1,3 @@
-import ProductForm from "./ProductForm";
-import ProductTableRow from "../elements/ProductTableRow";
 import {useSelector} from "react-redux";
 import InvoiceTableRow from "../elements/InvoiceTableRow";
 
@@ -28,7 +26,7 @@ const InvoicesTable = () => {
                             </thead>
                             <tbody>
                             {invoices.map((invoice, i) =>
-                                <InvoiceTableRow invoice={invoice} />
+                                <InvoiceTableRow invoice={invoice} key={i} />
                             )}
 
                             </tbody>

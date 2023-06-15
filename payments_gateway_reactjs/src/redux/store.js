@@ -5,5 +5,6 @@ import thunk from "redux-thunk";
 
 const reducers = combineReducers({simpleReducer: simpleReducer})
 
+//TODO: remove react-devtools-extension in production
 const store = createStore(reducers, composeWithDevTools(applyMiddleware(thunk)))
 export default store;

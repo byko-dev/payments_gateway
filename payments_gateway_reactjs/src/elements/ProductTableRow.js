@@ -1,14 +1,8 @@
 import {Button} from "flowbite-react";
-import {useEffect} from "react";
 import {useDispatch} from "react-redux";
 import {setSelectedProduct} from "../redux/operations";
 import {useNavigate} from "react-router-dom";
 const ProductTableRow = ({product}) => {
-
-
-    useEffect(() => {
-        console.log(product)
-    }, [])
 
     const dispatch = useDispatch();
     const navigate = useNavigate();

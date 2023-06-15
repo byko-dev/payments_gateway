@@ -33,3 +33,7 @@ export const createPayment = (method, productId) =>
 
 export const checkPayment = (method, token) =>
     request(serverUrl + "/" + method + "/success", "POST", {"Content-Type": "application/json"}, JSON.stringify({"token": token}))
+
+export const createCryptoPayment = (email, productId, cryptocurrency) =>
+    request(serverUrl + "/crypto/create/payment", "POST", {"Content-Type": "application/json"},
+        JSON.stringify({"email": email, "productId": productId, "cryptocurrency": cryptocurrency}))

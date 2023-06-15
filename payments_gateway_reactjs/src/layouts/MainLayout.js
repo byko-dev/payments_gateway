@@ -1,14 +1,9 @@
 import Footer from "../components/Footer";
-import ProductForm from "../components/ProductForm";
 
 const MainLayout = ({children}) => {
-
-
-
     return(
-        <main className={"main_layout"}>
+        <main className={"main_layout bg-gray-50"}>
             {children}
-
             <Footer />
         </main>
     )

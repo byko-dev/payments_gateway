@@ -1,5 +1,3 @@
-import {Button} from "flowbite-react";
-
 const InvoiceTableRow = ({invoice}) => {
 
     return(<tr className="border-b dark:border-gray-700">
