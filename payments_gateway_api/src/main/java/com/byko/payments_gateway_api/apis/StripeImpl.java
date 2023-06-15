@@ -19,7 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.UUID;
 
 @Service
-public class StripeApi implements PaymentImpl {
+public class StripeImpl implements Payment {
 
     @Value("${stripe.secret.key}")
     private String secretKey;
@@ -31,13 +31,12 @@ public class StripeApi implements PaymentImpl {
     private ProductService productService;
     private InvoiceService invoiceService;
 
-    public StripeApi(RestTemplate restTemplate, ProductService productService, InvoiceService invoiceService){
+    public StripeImpl(RestTemplate restTemplate, ProductService productService, InvoiceService invoiceService){
         this.restTemplate = restTemplate;
         this.productService = productService;
         this.invoiceService = invoiceService;
     }
 
-    @Override
     public HttpEntity<?> getRequestBody(Object body){
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -45,41 +44,9 @@ public class StripeApi implements PaymentImpl {
         return new HttpEntity<>(body, headers);
     }
 
-    public Product setProductIdRequest(Product product){
-        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
-        requestBody.add("name", product.getName());
-
-        ResponseEntity<ProductResponse> response =
-                restTemplate.postForEntity("https://api.stripe.com/v1/products", getRequestBody(requestBody), ProductResponse.class);
-
-        if(!response.getStatusCode().is2xxSuccessful())
-            throw new BadRequestException("Stripe -> can't get productId");
-
-        product.setStripeId(response.getBody().getId());
-        return productService.save(product);
-    }
-
-    /* https://stripe.com/docs/api/prices/create */
-    public Product setPriceToProductRequest(Product product){
-        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
-
-        requestBody.add("unit_amount", parsePriceToRequest(product.getPrice()));
-        requestBody.add("currency", "eur");
-        requestBody.add("product", product.getStripeId());
-
-        ResponseEntity<PriceResponse> response =
-                restTemplate.postForEntity("https://api.stripe.com/v1/prices", getRequestBody(requestBody), PriceResponse.class);
-
-        if(!response.getStatusCode().is2xxSuccessful())
-            throw new BadRequestException("Stripe -> can't get productId");
-
-        product.setStripePriceId(response.getBody().getId());
-        return productService.save(product);
-    }
-
     /* https://stripe.com/docs/api/payment_links/payment_links/create?lang=curl */
     @Override
-    public String createPayment(Product product, String cryptocurrency) {
+    public String createPayment(Product product) {
         if(product.getStripePriceId() == null){
             product = setProductIdRequest(product);
             product = setPriceToProductRequest(product);
@@ -92,7 +59,7 @@ public class StripeApi implements PaymentImpl {
         requestBody.add("line_items[0][quantity]", "1");
         requestBody.add("mode", "payment");
         requestBody.add("success_url", APPLICATION_URL + "/stripe/success?token=" + transactionId);
-        requestBody.add("cancel_url", APPLICATION_URL + "/stripe/cancel");
+        requestBody.add("cancel_url", APPLICATION_URL + "/cancel");
 
         ResponseEntity<PaymentResponse> response =
                 restTemplate.postForEntity("https://api.stripe.com/v1/checkout/sessions",
@@ -110,7 +77,7 @@ public class StripeApi implements PaymentImpl {
 
         invoiceService.save(invoice);
 
-        return response.getBody().toString();
+        return response.getBody().getUrl();
     }
 
     /* https://stripe.com/docs/api/checkout/sessions/retrieve */
@@ -138,7 +105,38 @@ public class StripeApi implements PaymentImpl {
         return false;
     }
 
+    private Product setProductIdRequest(Product product){
+        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+        requestBody.add("name", product.getName());
+
+        ResponseEntity<ProductResponse> response =
+                restTemplate.postForEntity("https://api.stripe.com/v1/products", getRequestBody(requestBody), ProductResponse.class);
+
+        if(!response.getStatusCode().is2xxSuccessful())
+            throw new BadRequestException("Stripe -> can't get productId");
+
+        product.setStripeId(response.getBody().getId());
+        return productService.save(product);
+    }
+
+    /* https://stripe.com/docs/api/prices/create */
+    private Product setPriceToProductRequest(Product product){
+        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+        requestBody.add("unit_amount", parsePriceToRequest(product.getPrice()));
+        requestBody.add("currency", "eur");
+        requestBody.add("product", product.getStripeId());
+
+        ResponseEntity<PriceResponse> response =
+                restTemplate.postForEntity("https://api.stripe.com/v1/prices", getRequestBody(requestBody), PriceResponse.class);
+
+        if(!response.getStatusCode().is2xxSuccessful())
+            throw new BadRequestException("Stripe -> can't get productId");
+
+        product.setStripePriceId(response.getBody().getId());
+        return productService.save(product);
+    }
+
     private String parsePriceToRequest(float price){
-        return String.valueOf(price).split(".") + "00";
+        return String.valueOf((int) Math.round((price * 100)));
     }
 }

@@ -23,6 +23,8 @@ public class Product {
     private String id;
 
     private String name;
+    private String brand;
+    private String category;
 
     /* currency usd */
     private float price;

@@ -1,6 +1,5 @@
 package com.byko.payments_gateway_api.database.schema;
 
-import com.byko.payments_gateway_api.database.enums.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

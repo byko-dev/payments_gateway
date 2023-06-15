@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 @Service
-public class PayPalApi implements PaymentImpl{
+public class PayPalImpl implements Payment {
 
     @Value("${paypal.client.id}")
     private String clientId;
@@ -34,30 +34,9 @@ public class PayPalApi implements PaymentImpl{
     private RestTemplate restTemplate;
     private InvoiceService invoiceService;
 
-
-    public PayPalApi(RestTemplate restTemplate, InvoiceService invoiceService){
+    public PayPalImpl(RestTemplate restTemplate, InvoiceService invoiceService){
         this.restTemplate = restTemplate;
         this.invoiceService = invoiceService;
-    }
-
-    private String generateAccessToken(){
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        httpHeaders.setBasicAuth(clientId, clientSecret);
-
-        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
-        requestBody.add("grant_type", "client_credentials");
-
-        HttpEntity<?> httpEntity = new HttpEntity<>(requestBody, httpHeaders);
-
-        ResponseEntity<AccessTokenResponse> accessTokenResponse = restTemplate.exchange(
-                BASE_API_URL + "/v1/oauth2/token",
-                HttpMethod.POST, httpEntity, AccessTokenResponse.class);
-
-        if(!accessTokenResponse.getStatusCode().is2xxSuccessful())
-            throw new BadRequestException("Can't generate paypal access token!");
-
-        return accessTokenResponse.getBody().getAccess_token();
     }
 
     @Override
@@ -101,7 +80,7 @@ public class PayPalApi implements PaymentImpl{
                                         "NO_SHIPPING",
                                         "PAY_NOW",
                                         APPLICATION_URL + "/paypal/success",
-                                        APPLICATION_URL + "/paypal/cancel"))));
+                                        APPLICATION_URL + "/cancel"))));
 
         ResponseEntity<PaymentCreationResponse> paymentCreationResponse = restTemplate.exchange(
                 BASE_API_URL + "/v2/checkout/orders",
@@ -147,5 +126,25 @@ public class PayPalApi implements PaymentImpl{
         }
 
         return false;
+    }
+
+    private String generateAccessToken(){
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        httpHeaders.setBasicAuth(clientId, clientSecret);
+
+        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+        requestBody.add("grant_type", "client_credentials");
+
+        HttpEntity<?> httpEntity = new HttpEntity<>(requestBody, httpHeaders);
+
+        ResponseEntity<AccessTokenResponse> accessTokenResponse = restTemplate.exchange(
+                BASE_API_URL + "/v1/oauth2/token",
+                HttpMethod.POST, httpEntity, AccessTokenResponse.class);
+
+        if(!accessTokenResponse.getStatusCode().is2xxSuccessful())
+            throw new BadRequestException("Can't generate paypal access token!");
+
+        return accessTokenResponse.getBody().getAccess_token();
     }
 }
